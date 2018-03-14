@@ -13,14 +13,6 @@ object dgg {
     Logger.getLogger("akka").setLevel(Level.ERROR)
 
     val spark = SparkSession.builder.master("local")
-      //.config("spark.driver.host","192.168.2.207")
-      //.config("spark.driver.host","192.168.131.30")
-      //.config("spark.local.ip","192.168.2.207")
-      //.config("yarn.resourcemanager.address", "192.168.2.207:8032")
-      //.config("spark.sql.hive.metastore.jars", "builtin")
-      //.config("hive.metastore.uris", "thrift://bd-master.iti.upv.es:10100")
-      .config("spark.sql.warehouse.dir", "hdfs://bd-master.iti.upv.es/user/hive/warehouse")
-      //.enableHiveSupport()
       .appName("spark session example")
       .getOrCreate()
 
@@ -40,7 +32,7 @@ object dgg {
       .schema(schema)
       .option("header","true")
       .format("csv")
-      .load("hdfs://bd-master.iti.upv.es/user/ubuntu/movies.*")
+      .load("hdfs://192.168.131.30/user/ubuntu/movies.*")
 
 
     streamingDataFrame.selectExpr("CAST(movieId AS STRING) AS key", "to_json(struct(*)) AS value").
@@ -68,27 +60,7 @@ object dgg {
       .option("truncate","false")
       .start()
       .awaitTermination()
-
-
-    //spark.sql("show databases").show()
-
-    //df.show()
-
-    /*
-    val stream = spark
-      .readStream
-      .format("kafka")
-      .option("kafka.bootstrap.servers", "192.168.2.207:9022")
-      .option("subscribePattern", "topic.*")
-      .option("startingOffsets", "earliest")
-      .option("endingOffsets", "latest")
-      .load()
-
-    stream.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-      .as[(String, String)]
-      */
-
-
+    
   }
 
 }
